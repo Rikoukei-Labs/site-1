@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concourser | The operations layer for a modern campus</title>
+<meta name="description" content="Concourser unifies attendance, meal allowances, and point-of-sale for a modern campus. Three installable apps, two web dashboards, one operations layer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-raised: #111111;
+    --bg-card: #111111;
+    --line: rgba(255, 198, 126, 0.14);
+    --line-soft: #2e2e2e;
+    --gold: #ffc67e;
+    --gold-bright: #ffd9a3;
+    --gold-dim: rgba(255, 198, 126, 0.55);
+    --accent2: #be5cd8;
+    --violet: #be5cd8;
+    --red: #d9604f;
+    --text: #e8e8e8;
+    --text-dim: #b8b8b8;
+    --text-faint: #8a8a8a;
+    --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --max-w: 1120px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 15.5px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: rgba(255, 198, 126, 0.25); color: #fff; }
+
+  a { color: inherit; }
+
+  /* ---------- Background layers ---------- */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #orrery-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  #orrery {
+    width: min(88vmin, 780px);
+    height: min(88vmin, 780px);
+    opacity: 0.42;
+    filter: drop-shadow(0 0 24px rgba(255, 198, 126, 0.12));
+  }
+  @media (max-width: 768px) {
+    #orrery { width: 120vmin; height: 120vmin; opacity: 0.22; }
+  }
+
+
+  /* ---------- Page chrome ---------- */
+  .page { position: relative; z-index: 1; }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(20px, 4vw, 44px);
+    height: 56px;
+    background: var(--bg);
+    border-bottom: 2px solid var(--line-soft);
+    transition: border-color 0.3s;
+  }
+  nav.nav-scrolled { border-bottom-color: var(--gold); }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .home-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    font-variant: small-caps;
+    text-decoration: none;
+    color: var(--text-faint);
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .home-link:hover { color: var(--accent2); }
+  .crumb-sep { color: var(--line-soft); font-family: var(--font-mono); }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+  .brand .mark {
+    width: 26px; height: 26px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .brand .mark::after {
+    content: "";
+    position: absolute;
+    top: 2px; left: 50%;
+    width: 5px; height: 5px;
+    margin-left: -2.5px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .nav-cta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--gold);
+    border: 1px solid rgba(255, 198, 126, 0.4);
+    border-radius: 0;
+    padding: 8px 16px;
+    transition: background 0.25s, color 0.25s;
+  }
+  .nav-cta:hover { background: var(--gold); color: #12100a; }
+  @media (max-width: 480px) {
+    .brand .brand-name { display: none; }
+    .nav-cta { font-size: 11px; padding: 7px 12px; }
+  }
+
+  /* ---------- Shared section layout ---------- */
+  section { position: relative; }
+  .inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 48px);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 28px; height: 1px;
+    background: var(--gold-dim);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(38px, 5.4vw, 62px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #ffffff;
+    max-width: 18em;
+  }
+  .lede {
+    color: var(--text-dim);
+    max-width: 40em;
+    margin-top: 18px;
+    font-size: clamp(16px, 1.6vw, 18px);
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0s);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 90px;
+    padding-bottom: 110px;
+    overflow: hidden;
+  }
+  .hero .orbits {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .hero .orbits span {
+    position: absolute;
+    border: 1px solid rgba(255, 198, 126, 0.07);
+    border-radius: 50%;
+  }
+  .hero .orbits span:nth-child(1) { width: 62vmin; height: 62vmin; }
+  .hero .orbits span:nth-child(2) { width: 92vmin; height: 92vmin; border-color: rgba(190, 92, 216, 0.05); }
+  .hero .orbits span:nth-child(3) { width: 128vmin; height: 128vmin; }
+  .hero-badge {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(68px, 12vw, 150px);
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    line-height: 0.9;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #ffffff 20%, var(--gold-bright) 75%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .tagline {
+    margin-top: 26px;
+    font-size: clamp(16px, 2vw, 22px);
+    font-weight: 600;
+    color: var(--text);
+    max-width: 30em;
+    line-height: 1.5;
+  }
+  .hero .tagline em {
+    font-style: normal;
+    color: var(--gold);
+  }
+  .hero .sub {
+    margin-top: 16px;
+    color: var(--text-dim);
+    max-width: 36em;
+  }
+  .hero-ctas { margin-top: 38px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    padding: 14px 26px;
+    border-radius: 0;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: #0a0a0a;
+    font-weight: 500;
+    box-shadow: 0 0 32px rgba(255, 198, 126, 0.22);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 44px rgba(255, 198, 126, 0.38); }
+  .btn-ghost {
+    color: var(--text);
+    border: 2px solid var(--line-soft);
+  }
+  .btn-ghost:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .scroll-hint {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  .scroll-hint::after {
+    content: "";
+    width: 1px;
+    height: 34px;
+    background: linear-gradient(180deg, var(--gold-dim), transparent);
+    animation: drip 2.2s ease-in-out infinite;
+  }
+  @keyframes drip {
+    0% { transform: scaleY(0); transform-origin: top; }
+    45% { transform: scaleY(1); transform-origin: top; }
+    55% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+  @media (prefers-reduced-motion: reduce) { .scroll-hint::after { animation: none; } }
+
+  /* ---------- Proof band ---------- */
+  .proof {
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    background: linear-gradient(180deg, rgba(17, 17, 17, 0.65), rgba(13, 13, 13, 0.85));
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 56px 0;
+  }
+  .proof .claim { max-width: 46em; }
+  .proof .claim {
+    font-size: clamp(16px, 1.9vw, 20px);
+    font-weight: 500;
+    line-height: 1.55;
+  }
+  .proof .claim strong { color: var(--gold); font-weight: 600; }
+  .proof .claim .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .proof .claim .live::before {
+    content: "";
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 10px var(--accent2);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.35; } }
+
+  /* ---------- Feature surfaces ---------- */
+  .features-head { padding: clamp(90px, 12vh, 150px) 0 30px; }
+
+  .surface {
+    padding: clamp(70px, 10vh, 120px) 0;
+  }
+  .surface .inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(36px, 6vw, 88px);
+    align-items: center;
+  }
+  .surface:nth-of-type(even) .inner .s-visual { order: -1; }
+  .s-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .s-label .num {
+    font-size: 26px;
+    color: rgba(255, 198, 126, 0.32);
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+  .surface h3 {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 46px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+  .surface .s-desc { color: var(--text-dim); margin-top: 14px; }
+  .surface ul {
+    list-style: none;
+    margin-top: 26px;
+    display: grid;
+    gap: 13px;
+  }
+  .surface li {
+    position: relative;
+    padding-left: 26px;
+    color: var(--text-dim);
+    font-size: 15.5px;
+  }
+  .surface li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 9px;
+    width: 8px; height: 8px;
+    border: 1.5px solid var(--gold-dim);
+    border-radius: 50%;
+  }
+  .surface li b { color: var(--text); font-weight: 600; }
+
+  /* Visual mock panels */
+  .panel {
+    background: linear-gradient(160deg, var(--bg-card), var(--bg-raised));
+    border: 2px solid var(--line-soft);
+    border-radius: 0;
+    padding: 26px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    position: relative;
+    overflow: hidden;
+  }
+  .panel::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gold);
+  }
+  .panel-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .panel-title .ok { color: var(--accent2); }
+
+  .chip {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 11px;
+    border-radius: 0;
+    border: 2px solid var(--line-soft);
+    color: var(--text-dim);
+    margin: 0 6px 6px 0;
+  }
+  .chip.on { border-color: rgba(255, 198, 126, 0.5); color: var(--gold); background: rgba(255, 198, 126, 0.07); }
+  .chip.teal { border-color: rgba(190, 92, 216, 0.4); color: var(--accent2); }
+
+  .qr-row { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+  .qr-box {
+    background: #fdf6ec;
+    border-radius: 0;
+    padding: 10px;
+    width: 128px;
+    height: 128px;
+    flex-shrink: 0;
+  }
+  .balance-line { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-top: 8px; }
+  .balance-line b { color: var(--gold); font-size: 20px; font-weight: 500; }
+  .meter {
+    height: 5px;
+    background: rgba(160, 160, 160, 0.15);
+    border-radius: 0;
+    margin-top: 10px;
+    overflow: hidden;
+    min-width: 160px;
+  }
+  .meter i { display: block; height: 100%; width: 62%; background: linear-gradient(90deg, var(--gold), var(--accent2)); border-radius: 0; }
+
+  .big-counter {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-weight: 700;
+    margin: 6px 0 14px;
+  }
+  .big-counter b { font-family: var(--font-display); font-size: 64px; font-weight: 900; color: var(--accent2); letter-spacing: 0; }
+  .big-counter span { font-size: 20px; color: var(--text-faint); font-weight: 400; }
+  .scan-feed { font-family: var(--font-mono); font-size: 12px; display: grid; gap: 8px; color: var(--text-dim); }
+  .scan-feed div { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(160, 160, 160, 0.12); padding-bottom: 7px; }
+  .scan-feed .t { color: var(--text-faint); }
+  .scan-feed .new { color: var(--accent2); }
+
+  .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 6px; }
+  .keypad button {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    padding: 14px 0;
+    background: rgba(160, 160, 160, 0.07);
+    color: var(--text);
+    border: 2px solid var(--line-soft);
+    border-radius: 0;
+    cursor: default;
+  }
+  .keypad button.gold { background: rgba(255, 198, 126, 0.1); border-color: rgba(255, 198, 126, 0.4); color: var(--gold); }
+  .pos-total { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+  .pos-total b { color: var(--gold); }
+
+  .table-mock { font-family: var(--font-mono); font-size: 12px; width: 100%; border-collapse: collapse; }
+  .table-mock th {
+    text-align: left;
+    color: var(--text-faint);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 0 8px 10px 0;
+  }
+  .table-mock td { padding: 9px 8px 9px 0; border-top: 1px solid rgba(160, 160, 160, 0.1); color: var(--text-dim); }
+  .pill { font-size: 10px; padding: 3px 9px; border-radius: 0; }
+  .pill.a { background: rgba(190, 92, 216, 0.12); color: var(--accent2); }
+  .pill.i { background: rgba(190, 92, 216, 0.14); color: var(--violet); }
+
+  .bars { display: flex; align-items: flex-end; gap: 7px; height: 120px; margin-top: 10px; }
+  .bars i {
+    flex: 1;
+    background: linear-gradient(180deg, rgba(190, 92, 216, 0.85), rgba(190, 92, 216, 0.25));
+    border-radius: 0;
+    min-width: 8px;
+  }
+  .bars i.peak { background: linear-gradient(180deg, var(--gold), rgba(255, 198, 126, 0.3)); }
+  .bars-x { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); margin-top: 8px; }
+  .low-list { margin-top: 18px; font-family: var(--font-mono); font-size: 12px; display: grid; gap: 7px; }
+  .low-list div { display: flex; justify-content: space-between; color: var(--text-dim); }
+  .low-list .warn { color: var(--gold); }
+  .low-list .dep { color: var(--red); }
+
+  @media (max-width: 860px) {
+    .surface .inner { grid-template-columns: 1fr; }
+    .surface:nth-of-type(even) .inner .s-visual { order: 0; }
+  }
+
+  /* ---------- Security ---------- */
+  .security {
+    padding: clamp(90px, 12vh, 150px) 0;
+    background: linear-gradient(180deg, transparent, rgba(13, 13, 13, 0.6) 20%, rgba(13, 13, 13, 0.6) 80%, transparent);
+  }
+  .sec-grid {
+    margin-top: 52px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .sec-card {
+    border: 2px solid var(--line-soft);
+    border-radius: 0;
+    padding: 28px 24px;
+    background: rgba(17, 17, 17, 0.6);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .sec-card:hover { border-color: rgba(255, 198, 126, 0.35); transform: translateY(-3px); }
+  .sec-card .ico {
+    width: 40px; height: 40px;
+    border: 1.5px solid var(--gold-dim);
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    color: var(--gold);
+  }
+  .sec-card h4 { font-family: var(--font-display); font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: #ffffff; margin-bottom: 8px; }
+  .sec-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+  .sec-card .soon {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--violet);
+    border: 1px solid rgba(190, 92, 216, 0.35);
+    border-radius: 0;
+    padding: 2px 9px;
+    margin-bottom: 10px;
+  }
+
+  /* ---------- In the field (kept deliberately quiet) ---------- */
+  .impact { padding: clamp(90px, 12vh, 150px) 0; }
+  .field-notes {
+    margin-top: 44px;
+    max-width: 640px;
+    border: 2px solid var(--line-soft);
+    border-left: 4px solid var(--gold-dim);
+    background: var(--bg-raised);
+    padding: 20px 24px;
+  }
+  .field-notes .fn-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+  }
+  .field-notes .fn-line {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: var(--text-dim);
+  }
+  .field-notes .fn-note {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-faint);
+  }
+
+  /* ---------- Footer / closing ---------- */
+  .closing {
+    padding: clamp(100px, 16vh, 190px) 0 60px;
+    text-align: center;
+    border-top: 1px solid var(--line-soft);
+    background: linear-gradient(180deg, transparent, rgba(14, 10, 16, 0.55));
+  }
+  .closing h2 { margin: 0 auto; max-width: 15em; }
+  .closing .lede { margin-left: auto; margin-right: auto; text-align: center; }
+  .closing .hero-ctas { justify-content: center; }
+  .foot-links {
+    margin-top: 90px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .foot-links .links { display: flex; gap: 18px 26px; flex-wrap: wrap; justify-content: center; }
+  @media (max-width: 640px) {
+    .foot-links { justify-content: center; text-align: center; }
+  }
+  .foot-links a { color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+  .foot-links a:hover { color: var(--gold); }
+
+  /* ---------- Rikoukei texture layers ---------- */
+  .grain {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9000;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+  .scan-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(255, 198, 126, 0.015) 3px,
+      rgba(255, 198, 126, 0.015) 4px
+    );
+  }
+
+  /* ---------- Custom cursor (desktop) ---------- */
+  @media (pointer: fine) {
+    html, body, a, button { cursor: none; }
+    .cursor-reticle {
+      position: fixed;
+      top: 0; left: 0;
+      width: 24px; height: 24px;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      will-change: transform;
+    }
+    .cursor-reticle::before,
+    .cursor-reticle::after {
+      content: "";
+      position: absolute;
+      background: var(--gold);
+    }
+    .cursor-reticle::before { top: 50%; left: 2px; right: 2px; height: 1px; transform: translateY(-50%); }
+    .cursor-reticle::after { left: 50%; top: 2px; bottom: 2px; width: 1px; transform: translateX(-50%); }
+    .cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 24px; height: 24px;
+      border: 1.5px solid var(--gold);
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      opacity: 0.6;
+      will-change: transform;
+    }
+  }
+  @media (pointer: coarse) {
+    .cursor-reticle, .cursor-ring { display: none; }
+  }
+
+  /* ---------- Section header glitch ---------- */
+  .glitch-active { animation: glitch-text 0.4s steps(2) forwards; }
+  @keyframes glitch-text {
+    0% { opacity: 1; transform: translate(0); text-shadow: none; }
+    10% { opacity: 0.7; transform: translate(-3px, 1px); text-shadow: 2px 0 var(--gold), -2px 0 var(--accent2); }
+    20% { opacity: 1; transform: translate(2px, -1px); text-shadow: -1px 0 var(--accent2), 1px 0 var(--gold); }
+    30% { opacity: 0.8; transform: translate(0, 2px); text-shadow: 2px 0 var(--gold); }
+    40% { opacity: 1; transform: translate(-1px, 0); text-shadow: none; }
+    50% { opacity: 0.6; transform: translate(3px, 1px); text-shadow: -2px 0 var(--accent2), 3px 0 var(--gold); }
+    60% { opacity: 1; transform: translate(0); text-shadow: 1px 0 var(--gold); }
+    70% { opacity: 0.9; transform: translate(-2px, -1px); text-shadow: -1px 0 var(--accent2); }
+    80% { opacity: 1; transform: translate(1px, 0); text-shadow: none; }
+    100% { opacity: 1; transform: translate(0); text-shadow: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glitch-active { animation: none; }
+  }
+
+  /* ---------- Warp-in arrival (from the Rikoukei site) ---------- */
+  #warp-in {
+    position: fixed;
+    inset: 0;
+    z-index: 9500;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+  }
+  #warp-in.done { opacity: 0; pointer-events: none; }
+  #warp-in .wring {
+    position: absolute;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+  }
+  #warp-in .wring.r1 { width: 26vmin; height: 26vmin; }
+  #warp-in .wring.r2 { width: 46vmin; height: 46vmin; border-color: var(--accent2); border-width: 1px; }
+  #warp-in .wring.r3 { width: 68vmin; height: 68vmin; border-width: 1px; }
+  #warp-in .wdot {
+    position: absolute;
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+  }
+  #warp-in .wlabel {
+    position: absolute;
+    margin-top: 42vmin;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    opacity: 0;
+  }
+  #warp-in.play .wring { animation: warp-ring 1.05s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  #warp-in.play .wring.r2 { animation-delay: 0.1s; }
+  #warp-in.play .wring.r3 { animation-delay: 0.2s; }
+  #warp-in.play .wdot { animation: warp-dot 0.9s ease forwards 0.15s; }
+  #warp-in.play .wlabel { animation: warp-label 0.8s ease forwards 0.25s; }
+  @keyframes warp-ring {
+    0% { transform: scale(2.8); opacity: 0; }
+    30% { opacity: 0.9; }
+    100% { transform: scale(1); opacity: 0.15; }
+  }
+  @keyframes warp-dot {
+    0% { transform: scale(0); opacity: 0; }
+    40% { transform: scale(1.6); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.6; }
+  }
+  @keyframes warp-label {
+    0% { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Mobile performance ----------
+     Drop the GPU-heavy layers on small screens: blend-mode grain,
+     scanlines, backdrop blur, and the big SVG drop-shadow. The starfield
+     is drawn once (no parallax redraws) and the orrery is a simple fade. */
+  @media (max-width: 768px) {
+    .grain, .scan-layer { display: none; }
+    .proof { backdrop-filter: none; -webkit-backdrop-filter: none; }
+    #orrery { filter: none; }
+    .reveal {
+      transform: translateY(14px);
+      transition-duration: 0.45s;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Grain overlay via inline SVG filter (matches rikoukeilabs.com) -->
+<svg class="grain" aria-hidden="true">
+  <filter id="grain-filter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain-filter)"/>
+</svg>
+
+<!-- Custom cursor -->
+<div class="cursor-reticle" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<!-- Warp arrival overlay (plays when navigating in from the Rikoukei site) -->
+<div id="warp-in" aria-hidden="true">
+  <span class="wring r3"></span>
+  <span class="wring r2"></span>
+  <span class="wring r1"></span>
+  <span class="wdot"></span>
+  <span class="wlabel">// DOCKING : Concourser</span>
+</div>
+
+<canvas id="starfield" aria-hidden="true"></canvas>
+
+<!-- Scroll-assembled orrery (the Concourser mark, piece by piece) -->
+<div id="orrery-wrap" aria-hidden="true">
+  <svg id="orrery" viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg" fill="transparent">
+    <defs>
+      <clipPath id="clip-path-0"><circle cx="800" cy="800" r="253.05"/></clipPath>
+      <mask id="mask-0"><rect width="1600" height="1600" fill="white"/><circle cx="546.95" cy="800" r="96.25" fill="black"/></mask>
+      <mask id="mask-1"><rect width="1600" height="1600" fill="white"/><circle cx="546.95" cy="800" r="77" fill="black"/></mask>
+    </defs>
+    <g transform="translate(800,800) scale(2.07) translate(-800,-800)">
+      <g>
+        <path class="lp" d="M 978.9333709792559 978.9333709792558 A 253.04999999999998 253.04999999999998 0 0 1 621.0666290207441 978.9333709792559" fill="transparent" stroke-width="4" stroke="#ffc67e"/>
+        <circle class="lp" cx="800" cy="956.8" r="77" stroke-width="4" stroke="#ffc67e"/>
+        <circle class="ld" cx="868.6075023625043" cy="921.8427315200548" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <circle class="ld" cx="854.4472221513641" cy="902.3527778486358" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <circle class="lp" cx="800" cy="879.8" r="38" stroke-width="4" stroke="#ffc67e"/>
+      </g>
+      <g>
+        <path class="lp" d="M 978.9333709792558 621.0666290207441 A 253.04999999999998 253.04999999999998 0 0 1 978.9333709792559 978.9333709792559" fill="transparent" stroke-width="4" stroke="#ffc67e"/>
+        <circle class="lp" cx="956.8" cy="800" r="96.25" stroke-width="4" stroke="#ffc67e"/>
+        <line class="lp" x1="878.9321142914113" y1="743.4256694668495" x2="836.1047771516875" y2="712.3097876736166" stroke-width="4" stroke="#ffc67e"/>
+        <circle class="lp" cx="956.8" cy="800" r="77" stroke-width="5" stroke="#ffc67e"/>
+        <circle class="ld" cx="921.8427315200548" cy="731.3924976374957" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <circle class="ld" cx="902.3527778486358" cy="745.5527778486359" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <circle class="lp" cx="879.8" cy="800" r="38" stroke-width="5" stroke="#ffc67e"/>
+      </g>
+      <g>
+        <path class="lp" d="M 621.0666290207441 621.0666290207441 A 253.04999999999998 253.04999999999998 0 0 1 978.9333709792559 621.0666290207441" fill="transparent" stroke-width="4" stroke="#ffc67e"/>
+        <circle class="lp" cx="800" cy="546.95" r="38" stroke-width="4" stroke="#ffc67e"/>
+        <line class="lp" x1="800" y1="508.95000000000005" x2="800" y2="432.95000000000005" stroke-width="4" stroke="#ffc67e"/>
+      </g>
+      <g>
+        <path class="lp" d="M 621.0666290207441 978.9333709792559 A 253.04999999999998 253.04999999999998 0 0 1 621.0666290207441 621.0666290207441" fill="transparent" mask="url(#mask-0)" stroke-width="4" stroke="#ffc67e"/>
+        <path class="lp" d="M 546.95 703.75 A 96.25 96.25 0 0 1 546.95 896.25" clip-path="url(#clip-path-0)" stroke-width="4" stroke="#ffc67e"/>
+        <circle class="ld" cx="576.6928857085887" cy="891.5391896934085" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <circle class="ld" cx="603.5243305331505" cy="877.8678857085887" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <circle class="ld" cx="624.8178857085887" cy="856.5743305331506" r="9.5" stroke-width="0" fill="#ffc67e"/>
+        <path class="lp" d="M 621.0666290207441 978.9333709792559 A 253.04999999999998 253.04999999999998 0 0 1 621.0666290207441 621.0666290207441" fill="transparent" mask="url(#mask-1)" stroke-width="4" stroke="#ffc67e"/>
+        <path class="lp" d="M 546.95 723 A 77 77 0 0 1 546.95 877" clip-path="url(#clip-path-0)" stroke-width="5" stroke="#ffc67e"/>
+        <line class="lp" x1="570.7443085668709" y1="873.2313517547268" x2="583.83117827865" y2="913.5085952198266" stroke-width="5" stroke="#ffc67e"/>
+        <line class="lp" x1="592.2094644265204" y1="862.294308566871" x2="617.1021698611066" y2="896.55617827865" stroke-width="5" stroke="#ffc67e"/>
+        <line class="lp" x1="609.244308566871" y1="845.2594644265205" x2="643.50617827865" y2="870.1521698611067" stroke-width="5" stroke="#ffc67e"/>
+        <circle class="lp" cx="546.95" cy="800" r="38" stroke-width="5" stroke="#ffc67e"/>
+      </g>
+    </g>
+  </svg>
+</div>
+
+<div class="scan-layer" aria-hidden="true"></div>
+
+<nav id="site-nav">
+  <div class="nav-left">
+    <a class="home-link" href="../">Rikoukei Labs</a>
+    <span class="crumb-sep">/</span>
+    <a class="brand" href="#top">
+      <span class="mark"></span>
+      <span class="brand-name">Concourser</span>
+    </a>
+  </div>
+  <a class="nav-cta" href="#contact">REQUEST A DEMO</a>
+</nav>
+
+<div class="page" id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="orbits" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="inner">
+      <div class="hero-badge reveal">CAMPUS OPERATIONS PLATFORM</div>
+      <h1 class="reveal" style="--d:.08s">Concourser</h1>
+      <p class="tagline reveal" style="--d:.16s">The operations layer for a modern campus: <em>attendance</em>, <em>meals</em>, and <em>payments</em>, unified.</p>
+      <p class="sub reveal" style="--d:.24s">Three installable apps and two web dashboards, orbiting one source of truth. Every check-in, every charge, every allowance, accounted for in real time.</p>
+      <div class="hero-ctas reveal" style="--d:.32s">
+        <a class="btn btn-primary" href="#contact">Request a demo</a>
+        <a class="btn btn-ghost" href="#platform">Explore the platform</a>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll to assemble</div>
+  </section>
+
+  <!-- ============ PROOF BAND ============ -->
+  <section class="proof">
+    <div class="inner">
+      <div class="claim reveal">
+        <div class="live">Live in production</div>
+        Deployed in real-time production use at a <strong>top-100 global research university</strong> campus, running attendance, meal allowances, and point-of-sale every day.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="features-head" id="platform">
+    <div class="inner">
+      <div class="eyebrow reveal">The platform</div>
+      <h2 class="reveal" style="--d:.1s">One system. Five surfaces.<br>Zero missed signals.</h2>
+      <p class="lede reveal" style="--d:.2s">Each surface is purpose-built for the person holding it: student, teacher, till operator, administrator, or diner manager. Every one of them writes to the same ledger.</p>
+    </div>
+  </section>
+
+  <!-- Surface 01: Student App -->
+  <section class="surface">
+    <div class="inner">
+      <div class="s-copy reveal">
+        <div class="s-label"><span class="num">01</span> Student App</div>
+        <h3>One QR for class.<br>One QR for lunch.</h3>
+        <p class="s-desc">The app in every student's pocket: check in, pay, and see exactly where the day's allowance stands.</p>
+        <ul>
+          <li><b>Attendance check-in</b> with an auto-refreshing QR code that appears only while a session is open, with instant on-screen confirmation the moment they're scanned in.</li>
+          <li><b>QR meal payment</b> with the live remaining balance right beside the code.</li>
+          <li><b>Static printed codes</b> for students who need them: fixed cards, centrally revocable.</li>
+          <li><b>Full history</b> of transactions and attendance, plus a clear balance breakdown: base, bonus, spent today, remaining.</li>
+        </ul>
+      </div>
+      <div class="s-visual reveal" style="--d:.15s">
+        <div class="panel">
+          <div class="panel-title"><span>MEAL CODE</span><span class="ok">● SESSION ACTIVE</span></div>
+          <div class="qr-row">
+            <div class="qr-box">
+              <svg viewBox="0 0 29 29" width="100%" height="100%" aria-hidden="true">
+                <g fill="#141414">
+                  <path d="M0 0h7v7H0zM2 2h3v3H2zM22 0h7v7h-7zM24 2h3v3h-3zM0 22h7v7H0zM2 24h3v3H2z" fill-rule="evenodd"/>
+                  <rect x="9" y="1" width="2" height="2"/><rect x="13" y="0" width="2" height="2"/><rect x="17" y="2" width="2" height="2"/>
+                  <rect x="9" y="5" width="2" height="2"/><rect x="14" y="4" width="3" height="2"/><rect x="19" y="5" width="1" height="2"/>
+                  <rect x="1" y="9" width="2" height="2"/><rect x="5" y="10" width="2" height="2"/><rect x="9" y="9" width="3" height="3"/>
+                  <rect x="14" y="10" width="2" height="2"/><rect x="18" y="9" width="2" height="2"/><rect x="22" y="10" width="2" height="2"/>
+                  <rect x="26" y="9" width="2" height="2"/><rect x="0" y="14" width="2" height="2"/><rect x="4" y="13" width="2" height="3"/>
+                  <rect x="8" y="14" width="2" height="2"/><rect x="12" y="13" width="3" height="3"/><rect x="17" y="14" width="2" height="2"/>
+                  <rect x="21" y="13" width="2" height="2"/><rect x="25" y="14" width="3" height="2"/><rect x="2" y="18" width="2" height="2"/>
+                  <rect x="6" y="17" width="2" height="2"/><rect x="10" y="18" width="2" height="2"/><rect x="14" y="17" width="2" height="3"/>
+                  <rect x="18" y="18" width="3" height="2"/><rect x="23" y="17" width="2" height="2"/><rect x="27" y="18" width="1" height="2"/>
+                  <rect x="9" y="22" width="2" height="2"/><rect x="13" y="23" width="2" height="2"/><rect x="17" y="22" width="2" height="2"/>
+                  <rect x="21" y="23" width="3" height="2"/><rect x="26" y="22" width="2" height="2"/><rect x="10" y="26" width="2" height="2"/>
+                  <rect x="14" y="27" width="3" height="1"/><rect x="19" y="26" width="2" height="2"/><rect x="24" y="26" width="2" height="2"/>
+                </g>
+              </svg>
+            </div>
+            <div>
+              <div class="chip on">AUTO-REFRESH · 30s</div>
+              <div class="balance-line">Remaining today<br><b>24.50</b> <span style="color:var(--text-faint)">/ 40.00</span></div>
+              <div class="meter"><i></i></div>
+            </div>
+          </div>
+          <div style="margin-top:20px">
+            <span class="chip">Base 35.00</span><span class="chip teal">Bonus +5.00</span><span class="chip">Spent 15.50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Surface 02: Teacher/TA App -->
+  <section class="surface">
+    <div class="inner">
+      <div class="s-copy reveal">
+        <div class="s-label"><span class="num">02</span> Teacher / TA App</div>
+        <h3>Attendance that runs itself. You just point the camera.</h3>
+        <p class="s-desc">Start a session, scan the room, watch the counter climb. Morning and afternoon, if the class runs twice.</p>
+        <ul>
+          <li><b>Start, resume, or close sessions</b> per class, with dual morning/afternoon sessions for two-session classes.</li>
+          <li><b>Live scan-in counter</b> showing students present out of total enrolled, updating in real time.</li>
+          <li><b>QR or manual entry</b>, with anti-double-scan cooldown and a confirmation buzz. Codes are single-use and expire; no replays.</li>
+          <li><b>Their own meal allowance</b> too: teachers carry a daily balance and meal QR just like students.</li>
+        </ul>
+      </div>
+      <div class="s-visual reveal" style="--d:.15s">
+        <div class="panel">
+          <div class="panel-title"><span>LIVE SESSION · CLASS 4B · MORNING</span><span class="ok">● SCANNING</span></div>
+          <div class="big-counter"><b>42</b><span>/ 56 present</span></div>
+          <div class="scan-feed">
+            <div><span class="new">✓ scanned · just now</span><span class="t">09:02:41</span></div>
+            <div><span>✓ scanned</span><span class="t">09:02:36</span></div>
+            <div><span>✓ scanned</span><span class="t">09:02:29</span></div>
+            <div><span style="color:var(--text-faint)">⏸ duplicate blocked · cooldown</span><span class="t">09:02:27</span></div>
+          </div>
+          <div style="margin-top:18px">
+            <span class="chip on">MORNING · OPEN</span><span class="chip">AFTERNOON · NOT STARTED</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Surface 03: Diner POS -->
+  <section class="surface">
+    <div class="inner">
+      <div class="s-copy reveal">
+        <div class="s-label"><span class="num">03</span> Diner POS App</div>
+        <h3>A till that knows every customer before the tray hits the counter.</h3>
+        <p class="s-desc">A shared-device point of sale for canteen staff, built for the lunch rush, accountable by design.</p>
+        <ul>
+          <li><b>Scan or search.</b> Rotating and static printed codes both work; name search covers the code that won't scan.</li>
+          <li><b>Balance check before charge</b>: name, role, program, and balance on screen; low-balance warnings, and hard blocks when funds run out.</li>
+          <li><b>Quick amounts or keypad</b> (5 / 10 / 15 / 20), receipt after every charge, then straight back to scanning.</li>
+          <li><b>Runs in your currency.</b> Concourser settles in 20+ currencies out of the box, so balances, charges, and reports all read in the campus's own denomination.</li>
+          <li><b>Live daily totals</b> with per-program breakdown, and a printable end-of-day PDF report. Every charge records the staff member who made it.</li>
+        </ul>
+      </div>
+      <div class="s-visual reveal" style="--d:.15s">
+        <div class="panel">
+          <div class="panel-title"><span>CHARGE · STUDENT · BALANCE 24.50</span><span class="ok">TILL 01</span></div>
+          <div class="keypad">
+            <button class="gold">5</button><button class="gold">10</button><button class="gold">15</button><button class="gold">20</button>
+            <button>1</button><button>2</button><button>3</button><button>⌫</button>
+            <button>4</button><button>5</button><button>6</button><button>0</button>
+            <button>7</button><button>8</button><button>9</button><button>.</button>
+          </div>
+          <div class="pos-total"><span>TODAY · 213 charges</span><b>5,290.00</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Surface 04: Admin Dashboard -->
+  <section class="surface">
+    <div class="inner">
+      <div class="s-copy reveal">
+        <div class="s-label"><span class="num">04</span> Admin Dashboard</div>
+        <h3>Mission control for the whole campus.</h3>
+        <p class="s-desc">The web dashboard where administrators run the entire lifecycle: people, programs, money, and the paper trail.</p>
+        <ul>
+          <li><b>Full user lifecycle</b> across students, teachers, admins, and store staff: create, bulk-upload from spreadsheet (with valid/invalid row preview), activate, deactivate, delete.</li>
+          <li><b>Class & program management</b>: single or dual attendance, teacher assignment, bulk class moves, auto-deactivation past program end dates.</li>
+          <li><b>Allowance control</b>: resets and bonuses per person or per whole program, in one action.</li>
+          <li><b>Printable QR card batches</b> as PDF, with per-student token regeneration to kill a lost card instantly.</li>
+          <li><b>Excel exports</b> for attendance and transactions, transaction voiding, and a full audit log of every admin action.</li>
+        </ul>
+      </div>
+      <div class="s-visual reveal" style="--d:.15s">
+        <div class="panel">
+          <div class="panel-title"><span>USER MANAGEMENT · 412 ACCOUNTS</span><span>AUDIT LOG ✓</span></div>
+          <table class="table-mock">
+            <tr><th>Role</th><th>Program</th><th>Status</th><th>Action</th></tr>
+            <tr><td>Student</td><td>AI Cohort 3</td><td><span class="pill a">Active</span></td><td>Reset · Move</td></tr>
+            <tr><td>Teacher</td><td>Robotics</td><td><span class="pill a">Active</span></td><td>Reset · Cards</td></tr>
+            <tr><td>Student</td><td>AI Cohort 2</td><td><span class="pill i">Inactive</span></td><td>Reactivate</td></tr>
+            <tr><td>Store staff</td><td>Diner</td><td><span class="pill a">Active</span></td><td>Reset</td></tr>
+          </table>
+          <div style="margin-top:18px">
+            <span class="chip on">BULK UPLOAD · 118 VALID / 2 FLAGGED</span><span class="chip">QR BATCH → PDF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Surface 05: Diner Dashboard -->
+  <section class="surface">
+    <div class="inner">
+      <div class="s-copy reveal">
+        <div class="s-label"><span class="num">05</span> Diner Dashboard</div>
+        <h3>Every transaction, every hour, every program, in one view.</h3>
+        <p class="s-desc">The diner's own control room: what's selling, who's running low, and how the week is really going.</p>
+        <ul>
+          <li><b>Real-time sales stats</b>: totals, unique customers, and average transaction at a glance.</li>
+          <li><b>Customer lookup & remote charge</b>: search by name, see the full allowance picture and code validity, charge from the dashboard keypad.</li>
+          <li><b>Allowance monitoring</b>: every active balance for the day, sorted most-depleted first, with at-limit and over-limit counts.</li>
+          <li><b>End-of-day, weekly, and monthly Excel analytics</b> with hourly and per-program revenue breakdowns.</li>
+        </ul>
+      </div>
+      <div class="s-visual reveal" style="--d:.15s">
+        <div class="panel">
+          <div class="panel-title"><span>SALES BY HOUR · TODAY</span><span class="ok">PEAK 09:00</span></div>
+          <div class="bars" aria-hidden="true">
+            <i style="height:22%"></i><i style="height:48%"></i><i class="peak" style="height:100%"></i><i style="height:72%"></i>
+            <i style="height:38%"></i><i style="height:30%"></i><i style="height:58%"></i><i style="height:80%"></i>
+            <i style="height:52%"></i><i style="height:26%"></i>
+          </div>
+          <div class="bars-x"><span>07</span><span>09</span><span>11</span><span>13</span><span>15</span><span>17</span></div>
+          <div class="low-list">
+            <div><span>Balances depleted</span><span class="dep">14 accounts</span></div>
+            <div><span>Running low (&lt; 20%)</span><span class="warn">31 accounts</span></div>
+            <div><span>Weekly report</span><span style="color:var(--accent2)">→ Excel</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SECURITY ============ -->
+  <section class="security" id="security">
+    <div class="inner">
+      <div class="eyebrow reveal">Security &amp; compliance</div>
+      <h2 class="reveal" style="--d:.1s">Built like ground control:<br>nothing moves unverified.</h2>
+      <p class="lede reveal" style="--d:.2s">Concourser handles identity, attendance, and financial activity for hundreds of people a day, so the security posture is not an afterthought.</p>
+      <div class="sec-grid">
+        <div class="sec-card reveal">
+          <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+          <h4>Encrypted in transit</h4>
+          <p>All traffic between every app, dashboard, and the server is encrypted end to end in transit. Logging out clears the device session.</p>
+        </div>
+        <div class="sec-card reveal" style="--d:.1s">
+          <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a9 9 0 1 1-9 9"/><path d="M3 4v5h5"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <h4>Short-lived rotating codes</h4>
+          <p>Meal and attendance QR codes rotate and expire in seconds; attendance codes are single-use. A screenshot is worthless a moment later, and lost printed cards are revoked centrally.</p>
+        </div>
+        <div class="sec-card reveal" style="--d:.2s">
+          <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></svg></div>
+          <h4>Per-app isolated storage</h4>
+          <p>Each app keeps its session in isolated local storage; one surface can never read another's session. POS customer details are shown only at the moment of a charge, never retained on the device.</p>
+        </div>
+        <div class="sec-card reveal" style="--d:.3s">
+          <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h4>Your data stays on your campus</h4>
+          <p>Every institution runs Concourser on its own lightweight, self-hosted infrastructure, so all personal and financial data stays under the university's direct control and inside its own borders, ready to meet local data-residency and protection requirements.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IMPACT ============ -->
+  <section class="impact" id="impact">
+    <div class="inner">
+      <div class="eyebrow reveal">In the field</div>
+      <h2 class="reveal" style="--d:.1s">In quiet, daily service.</h2>
+      <p class="lede reveal" style="--d:.2s">Concourser runs the everyday rhythm of a working campus: morning check-ins, the breakfast rush, the end-of-day report. It is not built to impress with dashboards; it is built to stay out of the way.</p>
+      <!-- Field-notes container temporarily removed (kept for later reference).
+      <div class="field-notes reveal" style="--d:.3s">
+        <div class="fn-title">FIELD NOTES · EARLY FIVE-DAY SAMPLE · FEB 2026</div>
+        <p class="fn-line">60,000+ settled&ensp;·&ensp;2,400+ transactions&ensp;·&ensp;~400 active students&ensp;·&ensp;busiest hour 09:00</p>
+        <p class="fn-note">An early snapshot; the platform has been in continuous daily use since. Aggregate figures only: Concourser never exposes individual spending profiles.</p>
+      </div>
+      -->
+    </div>
+  </section>
+
+  <!-- ============ CLOSING / FOOTER ============ -->
+  <section class="closing" id="contact">
+    <div class="inner">
+      <h2 class="reveal" style="--d:.18s">Every piece in orbit.<br>Bring Concourser to your campus.</h2>
+      <p class="lede reveal" style="--d:.26s">From the first morning scan to the end-of-day report, one platform keeps the whole operation in motion.</p>
+      <div class="hero-ctas reveal" style="--d:.34s">
+        <a class="btn btn-primary" href="mailto:contact@rikoukeilabs.com?subject=Concourser%20demo%20request">Get in touch</a>
+        <a class="btn btn-ghost" href="#top">Back to launch</a>
+      </div>
+
+      <div class="foot-links">
+        <span>© 2026 Rikoukei Labs</span>
+        <span class="links">
+          <a href="#platform">Platform</a>
+          <a href="#security">Security</a>
+          <a href="#impact">In the field</a>
+          <a href="mailto:contact@rikoukeilabs.com">Contact</a>
+        </span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var mobileMQ = window.matchMedia("(max-width: 768px)");
+
+  /* ============ Starfield with scroll parallax ============ */
+  var canvas = document.getElementById("starfield");
+  var ctx = canvas.getContext("2d");
+  var stars = [];
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var W = 0, H = 0;
+
+  function initStars() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    stars = [];
+    // Fewer stars on mobile: less canvas work per frame.
+    var cap = mobileMQ.matches ? 110 : 260;
+    var count = Math.min(cap, Math.floor(W * H / 6500));
+    for (var i = 0; i < count; i++) {
+      var depth = 0.2 + Math.random() * 0.8; // farther = slower parallax
+      var tint = Math.random();
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: depth * 1.25 * (0.5 + Math.random() * 0.7),
+        depth: depth,
+        a: 0.25 + Math.random() * 0.55,
+        color: tint > 0.92 ? "255,198,126" : (tint > 0.86 ? "190,92,216" : "224,224,224")
+      });
+    }
+  }
+
+  function drawStars(scrollY) {
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var y = (s.y - scrollY * s.depth * 0.12) % H;
+      if (y < 0) y += H;
+      ctx.beginPath();
+      ctx.arc(s.x, y, s.r, 0, 6.2832);
+      ctx.fillStyle = "rgba(" + s.color + "," + s.a + ")";
+      ctx.fill();
+    }
+  }
+
+  /* ============ Orrery scroll assembly ============ */
+  var orrery = document.getElementById("orrery");
+  var strokes = Array.prototype.slice.call(orrery.querySelectorAll(".lp"));
+  var dots = Array.prototype.slice.call(orrery.querySelectorAll(".ld"));
+
+  // Build the assembly order: interleave in document order (strokes and dots
+  // already alternate naturally through the four quadrant groups).
+  var pieces = Array.prototype.slice.call(orrery.querySelectorAll(".lp, .ld"));
+  var N = pieces.length;
+  var ASSEMBLY_END = 0.96; // fully assembled just as the footer arrives
+
+  pieces.forEach(function (el) {
+    if (el.classList.contains("lp")) {
+      var len = el.getTotalLength();
+      el.dataset.len = len;
+      el.style.strokeDasharray = len + " " + len;
+      el.style.strokeDashoffset = len;
+      el.style.opacity = "0";
+    } else {
+      el.style.opacity = "0";
+      el.style.transformBox = "fill-box";
+      el.style.transformOrigin = "center";
+      el.style.transform = "scale(0.2)";
+    }
+  });
+
+  function setPieceProgress(el, t) {
+    if (el.classList.contains("lp")) {
+      var len = parseFloat(el.dataset.len);
+      el.style.strokeDashoffset = String(len * (1 - t));
+      el.style.opacity = String(Math.min(1, t * 2.5));
+    } else {
+      el.style.opacity = String(t);
+      el.style.transform = "scale(" + (0.2 + 0.8 * t) + ")";
+    }
+  }
+
+  function completeAllPieces() {
+    pieces.forEach(function (el) { setPieceProgress(el, 1); });
+  }
+
+  var mobileAssembled = false;
+
+  function updateAssembly(p) {
+    // p = overall page scroll progress, 0..1
+    var ap = Math.max(0, Math.min(1, p / ASSEMBLY_END));
+
+    if (mobileMQ.matches) {
+      // Mobile: simple whole-logo fade-in instead of a per-piece draw.
+      // Pieces are completed once, then only the container opacity changes.
+      if (!mobileAssembled) { completeAllPieces(); mobileAssembled = true; }
+      orrery.style.opacity = String(0.05 + ap * 0.2);
+    } else {
+      mobileAssembled = false;
+      orrery.style.opacity = "";
+      var span = 1 / N;           // each piece owns a slice of the scroll
+      var overlap = 1.9;          // pieces overlap so assembly feels continuous
+      for (var i = 0; i < N; i++) {
+        var start = (i / N) * (1 - span * overlap);
+        var t = (ap - start) / (span * overlap);
+        setPieceProgress(pieces[i], Math.max(0, Math.min(1, t)));
+      }
+    }
+  }
+
+  /* ============ Scroll loop (rAF-throttled) ============ */
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var doc = document.documentElement;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      var p = Math.max(0, Math.min(1, window.scrollY / max));
+      updateAssembly(p);
+      // Mobile: skip the per-scroll parallax redraw; stars stay static.
+      if (!mobileMQ.matches) drawStars(window.scrollY);
+      ticking = false;
+    });
+  }
+
+  if (reducedMotion) {
+    // Show everything, fully assembled, no scroll-linked motion.
+    completeAllPieces();
+    orrery.style.opacity = "0.25";
+    initStars();
+    drawStars(0);
+  } else {
+    initStars();
+    drawStars(0);
+    // Initialize assembly state synchronously; the first rAF can be delayed.
+    updateAssembly(Math.max(0, Math.min(1,
+      window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight))));
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", function () { initStars(); drawStars(0); onScroll(); });
+    mobileMQ.addEventListener && mobileMQ.addEventListener("change", function () {
+      initStars();
+      drawStars(0);
+      onScroll();
+    });
+  }
+
+  /* ============ Section reveals ============ */
+  var revealEls = document.querySelectorAll(".reveal");
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    revealEls.forEach(function (el) { el.classList.add("visible"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add("visible");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    revealEls.forEach(function (el) { io.observe(el); });
+  }
+
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- Warp arrival: plays only when coming from the Rikoukei site ---- */
+  var warp = document.getElementById("warp-in");
+  var fromWarp = /[?&]warp=1/.test(location.search);
+  if (warp) {
+    if (fromWarp && !reducedMotion) {
+      warp.classList.add("play");
+      setTimeout(function () {
+        warp.classList.add("done");
+        setTimeout(function () { warp.remove(); }, 600);
+      }, 1050);
+    } else {
+      warp.remove();
+    }
+  }
+
+  /* ---- Nav border accent on scroll (matches rikoukeilabs.com) ---- */
+  var nav = document.getElementById("site-nav");
+  window.addEventListener("scroll", function () {
+    nav.classList.toggle("nav-scrolled", window.scrollY > 40);
+  }, { passive: true });
+
+  /* ---- Section header glitch on first view ---- */
+  var headers = document.querySelectorAll("h2");
+  if ("IntersectionObserver" in window && !reducedMotion) {
+    var gio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add("glitch-active");
+          gio.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    headers.forEach(function (h) { gio.observe(h); });
+  }
+
+  /* ---- Custom cursor (fine pointers only) ---- */
+  if (window.matchMedia("(pointer: fine)").matches) {
+    var reticle = document.querySelector(".cursor-reticle");
+    var ring = document.querySelector(".cursor-ring");
+    var mx = -100, my = -100, rx = -100, ry = -100;
+    document.addEventListener("mousemove", function (e) {
+      mx = e.clientX;
+      my = e.clientY;
+      reticle.style.transform = "translate(" + mx + "px, " + my + "px) translate(-50%, -50%)";
+    }, { passive: true });
+    (function animateRing() {
+      rx += (mx - rx) * 0.15;
+      ry += (my - ry) * 0.15;
+      ring.style.transform = "translate(" + rx + "px, " + ry + "px) translate(-50%, -50%)";
+      requestAnimationFrame(animateRing);
+    })();
+  }
+})();
+</script>
+</body>
+</html>
