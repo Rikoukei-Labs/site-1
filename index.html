@@ -1417,5 +1417,61 @@
   }
 })();
 </script>
+
+<!-- ============ CONTACT MODAL ============ -->
+<style>
+  #contact-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
+  #contact-modal.open{display:flex}
+  #contact-modal .cm-card{background:var(--bg-raised,#0d0f16);border:1px solid var(--line,#2a2d3a);max-width:420px;width:calc(100% - 48px);padding:28px 26px;position:relative}
+  #contact-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 18px}
+  #contact-modal .cm-row{margin:14px 0}
+  #contact-modal .cm-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--text-dim,#8b8f9f);display:block;margin-bottom:6px;text-transform:uppercase}
+  #contact-modal .cm-val{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #contact-modal .cm-email{font-family:var(--font-mono);font-size:14px;color:var(--text,#e8eaf0);user-select:all;word-break:break-all}
+  #contact-modal button.cm-copy{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--gold);background:none;border:1px solid var(--gold-dim,#8a6d2f);padding:5px 10px;cursor:pointer}
+  #contact-modal a.cm-link{font-family:var(--font-mono);font-size:13px;color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+  #contact-modal .cm-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim,#8b8f9f);font-size:20px;cursor:pointer;line-height:1}
+</style>
+<div id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="cm-title-txt">
+  <div class="cm-card">
+    <button class="cm-close" aria-label="Close">&times;</button>
+    <p class="cm-title" id="cm-title-txt">// CONTACT</p>
+    <div class="cm-row"><span class="cm-label">Email</span>
+      <span class="cm-val"><span class="cm-email">contact@rikoukeilabs.com</span><button class="cm-copy" type="button">COPY</button></span>
+    </div>
+    <div class="cm-row"><span class="cm-label">WhatsApp</span>
+      <span class="cm-val"><a class="cm-link" href="https://wa.me/918787066090" target="_blank" rel="noopener noreferrer">Message the Concourser team on Whatsapp now</a></span>
+    </div>
+    <div class="cm-row"><span class="cm-label">Email app</span>
+      <span class="cm-val"><a class="cm-link" id="cm-mailto" href="mailto:contact@rikoukeilabs.com">Open a pre-filled draft</a></span>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var modal=document.getElementById('contact-modal');
+  var mailtoLink=document.getElementById('cm-mailto');
+  var copyBtn=modal.querySelector('.cm-copy');
+  var emailEl=modal.querySelector('.cm-email');
+  document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){
+    if(modal.contains(a))return;
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      mailtoLink.setAttribute('href',a.getAttribute('href'));
+      modal.classList.add('open');
+    });
+  });
+  function close(){modal.classList.remove('open');}
+  modal.querySelector('.cm-close').addEventListener('click',close);
+  modal.addEventListener('click',function(e){if(e.target===modal)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  copyBtn.addEventListener('click',function(){
+    var t=emailEl.textContent;
+    function ok(){copyBtn.textContent='COPIED';setTimeout(function(){copyBtn.textContent='COPY';},1600);}
+    function fallback(){var r=document.createRange();r.selectNodeContents(emailEl);var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok();}catch(err){}}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fallback);}else{fallback();}
+  });
+})();
+</script>
 </body>
 </html>
