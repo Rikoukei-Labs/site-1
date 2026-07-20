@@ -738,6 +738,31 @@
     .glitch-active { animation: none; }
   }
 
+  /* ---------- Warp-out departure (to the apps page) ---------- */
+  .warp-out { position: fixed; inset: 0; z-index: 10000; pointer-events: none; }
+  .warp-out .wfill {
+    position: absolute; inset: 0; background: var(--bg);
+    clip-path: circle(0px at var(--cx) var(--cy));
+    animation: warp-fill 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards 0.1s;
+  }
+  .warp-out .wring {
+    position: absolute; left: var(--cx); top: var(--cy);
+    width: 16px; height: 16px; margin: -8px 0 0 -8px;
+    border: 2px solid var(--gold); border-radius: 50%; opacity: 0;
+    animation: warp-out-ring 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .warp-out .wring:nth-child(3) { animation-delay: 0.09s; border-width: 1px; }
+  .warp-out .wring:nth-child(4) { animation-delay: 0.18s; border-width: 1px; border-color: var(--accent2); }
+  .warp-out .wlabel {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.3em;
+    color: var(--gold); opacity: 0;
+    animation: warp-out-label 0.35s ease forwards 0.4s;
+  }
+  @keyframes warp-fill { to { clip-path: circle(150% at var(--cx) var(--cy)); } }
+  @keyframes warp-out-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(70); opacity: 0; } }
+  @keyframes warp-out-label { to { opacity: 1; } }
+
   /* ---------- Warp-in arrival (from the Rikoukei site) ---------- */
   #warp-in {
     position: fixed;
@@ -1177,6 +1202,7 @@
           <a href="#platform">Platform</a>
           <a href="#security">Security</a>
           <a href="#impact">In the field</a>
+          <a href="/apps/" id="products-link">Products</a>
           <a href="mailto:contact@rikoukeilabs.com">Contact</a>
         </span>
       </div>
@@ -1471,6 +1497,32 @@
     function ok(){copyBtn.textContent='COPIED';setTimeout(function(){copyBtn.textContent='COPY';},1600);}
     function fallback(){var r=document.createRange();r.selectNodeContents(emailEl);var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok();}catch(err){}}
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fallback);}else{fallback();}
+  });
+})();
+</script>
+<script>
+(function(){
+  var link = document.getElementById('products-link');
+  if (!link) return;
+  window.addEventListener('pageshow', function () {
+    document.querySelectorAll('.warp-out').forEach(function (n) { n.remove(); });
+  });
+  link.addEventListener('click', function (e) {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    e.preventDefault();
+    var ov = document.createElement('div');
+    ov.className = 'warp-out';
+    ov.style.setProperty('--cx', e.clientX + 'px');
+    ov.style.setProperty('--cy', e.clientY + 'px');
+    ov.innerHTML =
+      '<div class="wfill"></div>' +
+      '<span class="wring"></span>' +
+      '<span class="wring"></span>' +
+      '<span class="wring"></span>' +
+      '<span class="wlabel">// LAUNCHING : ECOSYSTEM</span>';
+    document.body.appendChild(ov);
+    setTimeout(function () { window.location.href = '/apps/?warp=1'; }, 760);
   });
 })();
 </script>

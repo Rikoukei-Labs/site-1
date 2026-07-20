@@ -240,6 +240,44 @@
   @keyframes warp-out-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(70); opacity: 0; } }
   @keyframes warp-out-label { to { opacity: 1; } }
 
+  /* ---------- warp-in arrival (same as home page) ---------- */
+  #warp-in {
+    position: fixed; inset: 0; z-index: 9500;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.5s ease;
+  }
+  #warp-in.done { opacity: 0; pointer-events: none; }
+  #warp-in .warc { position: absolute; border: 2px solid var(--gold); border-radius: 50%; opacity: 0; }
+  #warp-in .warc.r1 { width: 26vmin; height: 26vmin; }
+  #warp-in .warc.r2 { width: 46vmin; height: 46vmin; border-color: var(--accent2); border-width: 1px; }
+  #warp-in .warc.r3 { width: 68vmin; height: 68vmin; border-width: 1px; }
+  #warp-in .wdot { position: absolute; width: 10px; height: 10px; background: var(--gold); border-radius: 50%; opacity: 0; }
+  #warp-in .winlabel {
+    position: absolute; margin-top: 42vmin;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.3em;
+    color: var(--gold-dim); opacity: 0;
+  }
+  #warp-in.play .warc { animation: warp-ring 1.05s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  #warp-in.play .warc.r2 { animation-delay: 0.1s; }
+  #warp-in.play .warc.r3 { animation-delay: 0.2s; }
+  #warp-in.play .wdot { animation: warp-dot 0.9s ease forwards 0.15s; }
+  #warp-in.play .winlabel { animation: warp-label 0.8s ease forwards 0.25s; }
+  @keyframes warp-ring {
+    0% { transform: scale(2.8); opacity: 0; }
+    30% { opacity: 0.9; }
+    100% { transform: scale(1); opacity: 0.15; }
+  }
+  @keyframes warp-dot {
+    0% { transform: scale(0); opacity: 0; }
+    40% { transform: scale(1.6); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.6; }
+  }
+  @keyframes warp-label {
+    0% { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
   /* ---------- contact modal (same as home page) ---------- */
   #contact-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
   #contact-modal.open{display:flex}
@@ -255,6 +293,13 @@
 </style>
 </head>
 <body>
+<div id="warp-in" aria-hidden="true">
+  <span class="warc r3"></span>
+  <span class="warc r2"></span>
+  <span class="warc r1"></span>
+  <span class="wdot"></span>
+  <span class="winlabel">// DOCKING : ECOSYSTEM</span>
+</div>
 <div class="stars" aria-hidden="true"></div>
 <div class="stars2" aria-hidden="true"></div>
 
@@ -360,6 +405,19 @@
 </script>
 <script>
 (function(){
+  var warp = document.getElementById('warp-in');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (warp) {
+    if (/[?&]warp=1/.test(location.search) && !reduced) {
+      warp.classList.add('play');
+      setTimeout(function () {
+        warp.classList.add('done');
+        setTimeout(function () { warp.remove(); }, 600);
+      }, 1050);
+    } else {
+      warp.remove();
+    }
+  }
   window.addEventListener('pageshow', function () {
     document.querySelectorAll('.warp-out').forEach(function (n) { n.remove(); });
   });
