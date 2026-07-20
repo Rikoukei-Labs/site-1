@@ -240,6 +240,20 @@
   @keyframes warp-out-ring { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(70); opacity: 0; } }
   @keyframes warp-out-label { to { opacity: 1; } }
 
+  /* ---------- leave-confirmation modal ---------- */
+  #leave-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
+  #leave-modal.open{display:flex}
+  #leave-modal .lm-card{background:var(--bg-raised);border:1px solid var(--line);max-width:440px;width:calc(100% - 48px);padding:28px 26px;position:relative}
+  #leave-modal .lm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 14px;text-transform:uppercase}
+  #leave-modal .lm-text{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);line-height:1.7}
+  #leave-modal .lm-actions{display:flex;gap:12px;margin-top:22px}
+  #leave-modal .lm-actions button{font-family:var(--font-mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:10px 26px;cursor:pointer;transition:background .2s,color .2s}
+  #leave-modal .lm-yes{background:var(--gold);color:#0a0a0a;border:1px solid var(--gold)}
+  #leave-modal .lm-yes:hover{background:var(--gold-bright)}
+  #leave-modal .lm-no{background:none;color:var(--gold);border:1px solid var(--gold-dim)}
+  #leave-modal .lm-no:hover{background:rgba(255,198,126,.12)}
+  #leave-modal .lm-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1}
+
   /* ---------- warp-in arrival (same as home page) ---------- */
   #warp-in {
     position: fixed; inset: 0; z-index: 9500;
@@ -353,6 +367,17 @@
   </nav>
 </div>
 
+<div id="leave-modal" role="dialog" aria-modal="true" aria-labelledby="lm-title-txt">
+  <div class="lm-card">
+    <button class="lm-close" aria-label="Close">&times;</button>
+    <p class="lm-title" id="lm-title-txt">// DEPARTURE CHECK</p>
+    <p class="lm-text">Are you sure that you want to leave the concourser website to preview a demo instance?</p>
+    <div class="lm-actions">
+      <button class="lm-yes" type="button">Yes</button>
+      <button class="lm-no" type="button">No</button>
+    </div>
+  </div>
+</div>
 <footer class="foot-wrap">
   <div class="foot-links">
     <span>&copy; 2026 Rikoukei Labs</span>
@@ -440,6 +465,29 @@
       setTimeout(function() { window.location.href = 'https://www.cncrsr.com/?warp=1'; }, 760);
     });
   });
+})();
+</script>
+<script>
+(function(){
+  var modal = document.getElementById('leave-modal');
+  var pendingHref = null;
+  document.querySelectorAll('.sat a, .core-btn').forEach(function(a){
+    a.addEventListener('click', function(e){
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      pendingHref = a.getAttribute('href');
+      modal.classList.add('open');
+    });
+  });
+  function close(){ modal.classList.remove('open'); pendingHref = null; }
+  modal.querySelector('.lm-yes').addEventListener('click', function(){
+    if (pendingHref) window.open(pendingHref, '_blank', 'noopener');
+    close();
+  });
+  modal.querySelector('.lm-no').addEventListener('click', close);
+  modal.querySelector('.lm-close').addEventListener('click', close);
+  modal.addEventListener('click', function(e){ if (e.target === modal) close(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
 })();
 </script>
 </body>
