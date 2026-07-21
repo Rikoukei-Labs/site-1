@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Concourser | The operations layer for a modern campus</title>
 <meta name="description" content="Concourser unifies attendance, meal allowances, and point-of-sale for a modern campus. Three installable apps, two web dashboards, one operations layer.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20fill='%230a0a0a'/%3E%3Ccircle%20cx='16'%20cy='16'%20r='10'%20fill='none'%20stroke='%23ffc67e'%20stroke-width='2'/%3E%3Ccircle%20cx='16'%20cy='8'%20r='2.5'%20fill='%23ffc67e'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.cncrsr.com/">
+<meta property="og:title" content="Concourser | The operations layer for a modern campus">
+<meta property="og:description" content="Concourser unifies attendance, meal allowances, and point-of-sale for a modern campus. Three installable apps, two web dashboards, one operations layer.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Concourser | The operations layer for a modern campus">
+<meta name="twitter:description" content="Concourser unifies attendance, meal allowances, and point-of-sale for a modern campus.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,7 +27,6 @@
     --gold-bright: #ffd9a3;
     --gold-dim: rgba(255, 198, 126, 0.55);
     --accent2: #be5cd8;
-    --violet: #be5cd8;
     --red: #d9604f;
     --text: #e8e8e8;
     --text-dim: #b8b8b8;
@@ -532,8 +539,8 @@
   }
   .table-mock td { padding: 9px 8px 9px 0; border-top: 1px solid rgba(160, 160, 160, 0.1); color: var(--text-dim); }
   .pill { font-size: 10px; padding: 3px 9px; border-radius: 0; }
-  .pill.a { background: rgba(190, 92, 216, 0.12); color: var(--accent2); }
-  .pill.i { background: rgba(190, 92, 216, 0.14); color: var(--violet); }
+  .pill.a { background: rgba(190, 92, 216, 0.14); color: var(--accent2); }
+  .pill.i { background: rgba(160, 160, 160, 0.1); color: var(--text-faint); }
 
   .bars { display: flex; align-items: flex-end; gap: 7px; height: 120px; margin-top: 10px; }
   .bars i {
@@ -585,18 +592,6 @@
   }
   .sec-card h4 { font-family: var(--font-display); font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: #ffffff; margin-bottom: 8px; }
   .sec-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
-  .sec-card .soon {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--violet);
-    border: 1px solid rgba(190, 92, 216, 0.35);
-    border-radius: 0;
-    padding: 2px 9px;
-    margin-bottom: 10px;
-  }
 
   /* ---------- In the field (kept deliberately quiet) ---------- */
   .impact { padding: clamp(90px, 12vh, 150px) 0; }
@@ -686,7 +681,7 @@
 
   /* ---------- Custom cursor (desktop) ---------- */
   @media (pointer: fine) {
-    html, body, a, button { cursor: none; }
+    body.cursor-custom, body.cursor-custom a, body.cursor-custom button { cursor: none; }
     .cursor-reticle {
       position: fixed;
       top: 0; left: 0;
@@ -856,7 +851,7 @@
   <span class="wring r2"></span>
   <span class="wring r1"></span>
   <span class="wdot"></span>
-  <span class="wlabel">// DOCKING : Concourser</span>
+  <span class="wlabel">// DOCKING : CONCOURSER</span>
 </div>
 
 <canvas id="starfield" aria-hidden="true"></canvas>
@@ -1429,6 +1424,7 @@
   if (window.matchMedia("(pointer: fine)").matches) {
     var reticle = document.querySelector(".cursor-reticle");
     var ring = document.querySelector(".cursor-ring");
+    document.body.classList.add("cursor-custom");
     var mx = -100, my = -100, rx = -100, ry = -100;
     document.addEventListener("mousemove", function (e) {
       mx = e.clientX;
@@ -1449,15 +1445,15 @@
 <style>
   #contact-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
   #contact-modal.open{display:flex}
-  #contact-modal .cm-card{background:var(--bg-raised,#0d0f16);border:1px solid var(--line,#2a2d3a);max-width:420px;width:calc(100% - 48px);padding:28px 26px;position:relative}
+  #contact-modal .cm-card{background:var(--bg-raised);border:1px solid var(--line);max-width:420px;width:calc(100% - 48px);padding:28px 26px;position:relative}
   #contact-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 18px}
   #contact-modal .cm-row{margin:14px 0}
-  #contact-modal .cm-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--text-dim,#8b8f9f);display:block;margin-bottom:6px;text-transform:uppercase}
+  #contact-modal .cm-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase}
   #contact-modal .cm-val{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  #contact-modal .cm-email{font-family:var(--font-mono);font-size:14px;color:var(--text,#e8eaf0);user-select:all;word-break:break-all}
-  #contact-modal button.cm-copy{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--gold);background:none;border:1px solid var(--gold-dim,#8a6d2f);padding:5px 10px;cursor:pointer}
+  #contact-modal .cm-email{font-family:var(--font-mono);font-size:14px;color:var(--text);user-select:all;word-break:break-all}
+  #contact-modal button.cm-copy{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--gold);background:none;border:1px solid var(--gold-dim);padding:5px 10px;cursor:pointer}
   #contact-modal a.cm-link{font-family:var(--font-mono);font-size:13px;color:var(--gold);text-decoration:underline;text-underline-offset:3px}
-  #contact-modal .cm-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim,#8b8f9f);font-size:20px;cursor:pointer;line-height:1}
+  #contact-modal .cm-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1}
 </style>
 <div id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="cm-title-txt">
   <div class="cm-card">
