@@ -1,0 +1,22 @@
+# Operating system droppings
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Editor and tooling
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local scratch that should never be published
+.trash/
+.sandbox/
+*.log
