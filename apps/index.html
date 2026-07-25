@@ -133,6 +133,21 @@
     padding: 18px 28px;
     border-bottom: 2px solid var(--line-soft);
   }
+  .topbar .nav-left {
+    display: flex; align-items: center; gap: 14px; min-width: 0;
+  }
+  .topbar .home-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    font-variant: small-caps;
+    text-decoration: none;
+    color: var(--text-faint);
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .topbar .home-link:hover { color: var(--accent2); }
+  .topbar .crumb-sep { color: var(--line-soft); font-family: var(--font-mono); }
   .topbar .brand {
     display: flex; align-items: center; gap: 10px;
     font-family: var(--font-display);
@@ -162,6 +177,14 @@
     padding: 9px 16px; transition: background .2s, color .2s;
   }
   .home-btn:hover { background: var(--gold); color: #0a0a0a; }
+  @media (max-width: 520px) {
+    .topbar { padding: 14px 16px; }
+    .topbar .nav-left { gap: 10px; }
+    .topbar .brand { font-size: 15px; }
+    .topbar .brand .brand-name { display: none; }
+    .topbar .home-link { font-size: 11px; letter-spacing: .1em; }
+    .home-btn { font-size: 11px; padding: 8px 12px; }
+  }
 
   /* ---------- heading ---------- */
   .head { position: relative; z-index: 5; text-align: center; margin: 48px 16px 8px; }
@@ -355,6 +378,8 @@
   #leave-modal.open{display:flex}
   #leave-modal .lm-card{background:var(--bg-raised);border:1px solid var(--line);max-width:440px;width:calc(100% - 48px);padding:28px 26px;position:relative}
   #leave-modal .lm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 14px;text-transform:uppercase}
+  #leave-modal .lm-desc{font-family:var(--font-mono);font-size:12.5px;color:var(--text-faint);line-height:1.7;margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  #leave-modal .lm-desc:empty{display:none}
   #leave-modal .lm-text{font-family:var(--font-mono);font-size:13px;color:var(--text-dim);line-height:1.7}
   #leave-modal .lm-actions{display:flex;gap:12px;margin-top:22px}
   #leave-modal .lm-actions button{font-family:var(--font-mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:10px 26px;cursor:pointer;transition:background .2s,color .2s}
@@ -406,7 +431,8 @@
   #contact-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
   #contact-modal.open{display:flex}
   #contact-modal .cm-card{background:var(--bg-raised);border:1px solid var(--line);max-width:420px;width:calc(100% - 48px);padding:28px 26px;position:relative}
-  #contact-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 18px}
+  #contact-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 14px}
+  #contact-modal .cm-desc{font-family:var(--font-mono);font-size:12.5px;color:var(--text-dim);line-height:1.75;margin:0 0 18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
   #contact-modal .cm-row{margin:14px 0}
   #contact-modal .cm-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase}
   #contact-modal .cm-val{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -414,6 +440,20 @@
   #contact-modal button.cm-copy{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--gold);background:none;border:1px solid var(--gold-dim);padding:5px 10px;cursor:pointer}
   #contact-modal a.cm-link{font-family:var(--font-mono);font-size:13px;color:var(--gold);text-decoration:underline;text-underline-offset:3px}
   #contact-modal .cm-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1}
+
+  /* ---------- referral modal ---------- */
+  #referral-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
+  #referral-modal.open{display:flex}
+  #referral-modal .cm-card{background:var(--bg-raised);border:1px solid var(--line);max-width:470px;width:calc(100% - 48px);padding:28px 26px;position:relative;max-height:calc(100vh - 48px);overflow-y:auto}
+  #referral-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 14px}
+  #referral-modal .cm-desc{font-family:var(--font-mono);font-size:12.5px;color:var(--text-dim);line-height:1.75;margin:0 0 18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  #referral-modal .cm-row{margin:14px 0}
+  #referral-modal .cm-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase}
+  #referral-modal .cm-val{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #referral-modal .cm-email{font-family:var(--font-mono);font-size:14px;color:var(--text);user-select:all;word-break:break-all}
+  #referral-modal button.cm-copy{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;color:var(--gold);background:none;border:1px solid var(--gold-dim);padding:5px 10px;cursor:pointer}
+  #referral-modal a.cm-link{font-family:var(--font-mono);font-size:13px;color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+  #referral-modal .cm-close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;line-height:1}
 </style>
 </head>
 <body>
@@ -441,13 +481,17 @@
 <div class="scan-layer" aria-hidden="true"></div>
 
 <header class="topbar">
-  <a class="brand" href="https://www.cncrsr.com/"><span class="mark"></span><span class="brand-name">Concourser</span></a>
+  <div class="nav-left">
+    <a class="home-link" href="https://www.rikoukeilabs.com/">Rikoukei Labs</a>
+    <span class="crumb-sep">/</span>
+    <a class="brand" href="https://www.cncrsr.com/"><span class="mark"></span><span class="brand-name">Concourser</span></a>
+  </div>
   <a class="home-btn" href="https://www.cncrsr.com/">&larr; Home</a>
 </header>
 
 <section class="head">
   <h1 class="reveal">Check out the <em>Concourser</em> ecosystem</h1>
-  <p class="reveal" style="--d:.1s">// five modules &middot; one operations layer</p>
+  <p class="reveal" style="--d:.1s">// five modules &middot; one operations layer &middot; waiting for you</p>
 </section>
 
 <div class="space reveal" style="--d:.2s">
@@ -455,7 +499,7 @@
   <div class="ring inner" aria-hidden="true"></div>
 
   <div class="center">
-    <a class="core-btn" href="https://testflight.apple.com/join/bTTtYDPW" target="_blank" rel="noopener noreferrer">
+    <a class="core-btn" href="https://testflight.apple.com/join/bTTtYDPW" target="_blank" rel="noopener noreferrer" data-desc="Unified app on TestFlight: the native iOS beta that carries all three roles, student, teaching assistant and counter staff, in a single build.">
       <span class="tag">// iOS beta</span>
       <span class="label">Unified app on TestFlight</span>
     </a>
@@ -463,27 +507,27 @@
 
   <nav class="orbit" aria-label="Concourser demos">
     <div class="sat" style="--a: 0deg;"><div class="sat-inner">
-      <a href="https://kaustacademy.rikoukeilabs.com/student/" target="_blank" rel="noopener noreferrer">
+      <a href="https://kaustacademy.rikoukeilabs.com/student/" target="_blank" rel="noopener noreferrer" data-desc="Student app: students display a short-lived rotating QR code to check in for attendance and to draw against their meal allowance.">
         <span class="go">go to</span><span class="name">Student app demo</span>
       </a>
     </div></div>
     <div class="sat" style="--a: 72deg;"><div class="sat-inner">
-      <a href="https://kaustacademy.rikoukeilabs.com/teacher/" target="_blank" rel="noopener noreferrer">
+      <a href="https://kaustacademy.rikoukeilabs.com/teacher/" target="_blank" rel="noopener noreferrer" data-desc="Teacher app: teaching assistants open an attendance session for a class and scan student QR codes to mark them present.">
         <span class="go">go to</span><span class="name">Teacher app demo</span>
       </a>
     </div></div>
     <div class="sat" style="--a: 144deg;"><div class="sat-inner">
-      <a href="https://kaustacademy.rikoukeilabs.com/diner-pos/" target="_blank" rel="noopener noreferrer">
+      <a href="https://kaustacademy.rikoukeilabs.com/diner-pos/" target="_blank" rel="noopener noreferrer" data-desc="Store staff app: counter staff scan a student code and charge the meal against that student's allowance at the point of sale.">
         <span class="go">go to</span><span class="name">Store staff app demo</span>
       </a>
     </div></div>
     <div class="sat" style="--a: 216deg;"><div class="sat-inner">
-      <a href="https://kaust.rikoukeilabs.com/admin/" target="_blank" rel="noopener noreferrer">
+      <a href="https://kaust.rikoukeilabs.com/admin/" target="_blank" rel="noopener noreferrer" data-desc="Admin dashboard: administrators manage users, programs and allowances, then reconcile spending per cost center and export transaction and audit reports.">
         <span class="go">go to</span><span class="name">Admin dashboard demo</span>
       </a>
     </div></div>
     <div class="sat" style="--a: 288deg;"><div class="sat-inner">
-      <a href="https://kaust.rikoukeilabs.com/diner/" target="_blank" rel="noopener noreferrer">
+      <a href="https://kaust.rikoukeilabs.com/diner/" target="_blank" rel="noopener noreferrer" data-desc="Store manager dashboard: storefront managers follow sales, daily meal volumes and end-of-day totals for their own outlet.">
         <span class="go">go to</span><span class="name">Store manager dashboard demo</span>
       </a>
     </div></div>
@@ -494,6 +538,7 @@
   <div class="lm-card">
     <button class="lm-close" aria-label="Close">&times;</button>
     <p class="lm-title" id="lm-title-txt">// DEPARTURE CHECK</p>
+    <p class="lm-desc" id="lm-desc-txt"></p>
     <p class="lm-text">Are you sure that you want to leave the concourser website to preview a demo instance?</p>
     <div class="lm-actions">
       <button class="lm-yes" type="button">Yes</button>
@@ -505,6 +550,7 @@
   <div class="foot-links">
     <span>&copy; 2026 Rikoukei Labs</span>
     <span class="links">
+      <a href="#" id="ref-open">Refer a campus</a>
       <a href="mailto:contact@rikoukeilabs.com">Contact</a>
     </span>
   </div>
@@ -514,14 +560,32 @@
   <div class="cm-card">
     <button class="cm-close" aria-label="Close">&times;</button>
     <p class="cm-title" id="cm-title-txt">// CONTACT</p>
+    <p class="cm-desc">You can either drop us a message with your questions and our team will quickly get back to you with answers, or ask for an online meeting to talk face-to-face.</p>
     <div class="cm-row"><span class="cm-label">Email</span>
       <span class="cm-val"><span class="cm-email">contact@rikoukeilabs.com</span><button class="cm-copy" type="button">COPY</button></span>
     </div>
     <div class="cm-row"><span class="cm-label">WhatsApp</span>
-      <span class="cm-val"><a class="cm-link" href="https://wa.me/918787066090" target="_blank" rel="noopener noreferrer">Message the Concourser team on Whatsapp now</a></span>
+      <span class="cm-val"><a class="cm-link" href="https://wa.me/918787066090" target="_blank" rel="noopener noreferrer">Message the Concourser team now</a></span>
     </div>
     <div class="cm-row"><span class="cm-label">Email app</span>
       <span class="cm-val"><a class="cm-link" id="cm-mailto" href="mailto:contact@rikoukeilabs.com">Open a pre-filled draft</a></span>
+    </div>
+  </div>
+</div>
+
+<div id="referral-modal" role="dialog" aria-modal="true" aria-labelledby="rm-title-txt">
+  <div class="cm-card">
+    <button class="cm-close" aria-label="Close">&times;</button>
+    <p class="cm-title" id="rm-title-txt">// REFER A CAMPUS</p>
+    <p class="cm-desc">Know a campus that needs Concourser? Introduce us. If your introduction becomes a paying customer, you earn a commission on the deal. Consultants, suppliers, alumni and anyone who simply knows the right people are all welcome. Send us a few lines about yourself and the campus you have in mind, and we will reply with the terms.</p>
+    <div class="cm-row"><span class="cm-label">Email</span>
+      <span class="cm-val"><span class="cm-email">contact@rikoukeilabs.com</span><button class="cm-copy" type="button">COPY</button></span>
+    </div>
+    <div class="cm-row"><span class="cm-label">WhatsApp</span>
+      <span class="cm-val"><a class="cm-link" href="https://wa.me/918787066090?text=Hello%20Rikoukei%20Labs%2C%20I%20am%20interested%20in%20the%20Concourser%20referral%20program%20and%20I%20have%20a%20campus%20in%20mind%20to%20introduce." target="_blank" rel="noopener noreferrer">Message the Concourser team now</a></span>
+    </div>
+    <div class="cm-row"><span class="cm-label">Email app</span>
+      <span class="cm-val"><a class="cm-link" id="rm-mailto" href="mailto:contact@rikoukeilabs.com?subject=Concourser%20referral%20program&amp;body=Hello%20Rikoukei%20Labs%20team%2C%0D%0A%0D%0AI%20would%20like%20to%20introduce%20Concourser%20to%20a%20campus%20and%20take%20part%20in%20your%20referral%20program.%0D%0A%0D%0AAbout%20me%0D%0AName%3A%0D%0AWhere%20I%20am%20based%3A%0D%0AWhat%20I%20do%3A%0D%0A%0D%0AThe%20campus%20I%20have%20in%20mind%0D%0AInstitution%3A%0D%0AWhere%20it%20is%3A%0D%0ARoughly%20how%20many%20students%3A%0D%0A%0D%0APlease%20send%20me%20the%20referral%20terms%20and%20the%20commission%20details.%0D%0A%0D%0AThank%20you.">Open a pre-filled draft</a></span>
     </div>
   </div>
 </div>
@@ -647,6 +711,7 @@
   var emailEl=modal.querySelector('.cm-email');
   document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){
     if(modal.contains(a))return;
+    if(a.closest('#referral-modal'))return;
     a.addEventListener('click',function(e){
       e.preventDefault();
       mailtoLink.setAttribute('href',a.getAttribute('href'));
@@ -707,12 +772,14 @@
 <script>
 (function(){
   var modal = document.getElementById('leave-modal');
+  var desc = document.getElementById('lm-desc-txt');
   var pendingHref = null;
   document.querySelectorAll('.sat a, .core-btn').forEach(function(a){
     a.addEventListener('click', function(e){
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
       pendingHref = a.getAttribute('href');
+      desc.textContent = a.getAttribute('data-desc') || '';
       modal.classList.add('open');
     });
   });
@@ -725,6 +792,26 @@
   modal.querySelector('.lm-close').addEventListener('click', close);
   modal.addEventListener('click', function(e){ if (e.target === modal) close(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+})();
+</script>
+<script>
+(function(){
+  var modal=document.getElementById('referral-modal');
+  var opener=document.getElementById('ref-open');
+  if(!modal||!opener)return;
+  var copyBtn=modal.querySelector('.cm-copy');
+  var emailEl=modal.querySelector('.cm-email');
+  function close(){modal.classList.remove('open');}
+  opener.addEventListener('click',function(e){e.preventDefault();modal.classList.add('open');});
+  modal.querySelector('.cm-close').addEventListener('click',close);
+  modal.addEventListener('click',function(e){if(e.target===modal)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  copyBtn.addEventListener('click',function(){
+    var t=emailEl.textContent;
+    function ok(){copyBtn.textContent='COPIED';setTimeout(function(){copyBtn.textContent='COPY';},1600);}
+    function fallback(){var r=document.createRange();r.selectNodeContents(emailEl);var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');ok();}catch(err){}}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fallback);}else{fallback();}
+  });
 })();
 </script>
 </body>

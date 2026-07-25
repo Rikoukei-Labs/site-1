@@ -42,6 +42,8 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
   }
+  /* anchor targets must clear the 56px fixed nav */
+  section[id] { scroll-margin-top: 72px; }
 
   body {
     background: var(--bg);
@@ -161,9 +163,16 @@
     transition: background 0.25s, color 0.25s;
   }
   .nav-cta:hover { background: var(--gold); color: #12100a; }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
   @media (max-width: 480px) {
     .brand .brand-name { display: none; }
     .nav-cta { font-size: 11px; padding: 7px 12px; }
+    .nav-right { gap: 12px; }
   }
 
   /* ---------- Shared section layout ---------- */
@@ -593,6 +602,22 @@
   .sec-card h4 { font-family: var(--font-display); font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: #ffffff; margin-bottom: 8px; }
   .sec-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
 
+  /* ---------- Planned & upcoming ---------- */
+  .roadmap { padding: clamp(90px, 12vh, 150px) 0; }
+  .roadmap .sec-card {
+    border-style: dashed;
+    background: rgba(17, 17, 17, 0.35);
+  }
+  .roadmap .sec-card .tag {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 14px;
+  }
+
   /* ---------- In the field (kept deliberately quiet) ---------- */
   .impact { padding: clamp(90px, 12vh, 150px) 0; }
   .field-notes {
@@ -914,7 +939,10 @@
       <span class="brand-name">Concourser</span>
     </a>
   </div>
-  <a class="nav-cta" href="#contact">REQUEST A DEMO</a>
+  <div class="nav-right">
+    <a class="nav-cta" href="https://www.cncrsr.com/apps/" id="products-link">DEMOS</a>
+    <a class="nav-cta" href="#contact">REQUEST A PILOT</a>
+  </div>
 </nav>
 
 <div class="page" id="top">
@@ -926,17 +954,17 @@
       <div class="hero-badge reveal">CAMPUS OPERATIONS PLATFORM</div>
       <h1 class="reveal" style="--d:.08s">Concourser</h1>
       <p class="tagline reveal" style="--d:.16s">The operations layer for a modern campus: <em>attendance</em>, <em>meals</em>, and <em>payments</em>, unified.</p>
-      <p class="sub reveal" style="--d:.24s">Three installable apps and two web dashboards, orbiting one source of truth. Every check-in, every charge, every allowance, accounted for in real time.</p>
+      <p class="sub reveal" style="--d:.24s">Three installable apps and two web dashboards, orbiting one source of truth. Every check-in, every charge, every allowance, accounted for in real time. A system always improving together with our users.</p>
       <div class="hero-ctas reveal" style="--d:.32s">
-        <a class="btn btn-primary" href="#contact">Request a demo</a>
-        <a class="btn btn-ghost" href="#platform">Explore the platform</a>
+        <a class="btn btn-primary" href="#contact">Request a pilot</a>
+        <a class="btn btn-ghost" href="#proof">Explore our platform</a>
       </div>
     </div>
     <div class="scroll-hint">Scroll to assemble</div>
   </section>
 
   <!-- ============ PROOF BAND ============ -->
-  <section class="proof">
+  <section class="proof" id="proof">
     <div class="inner">
       <div class="claim reveal">
         <div class="live">Live in production</div>
@@ -948,9 +976,9 @@
   <!-- ============ FEATURES ============ -->
   <section class="features-head" id="platform">
     <div class="inner">
-      <div class="eyebrow reveal">The platform</div>
+      <div class="eyebrow reveal">The versatile platform</div>
       <h2 class="reveal" style="--d:.1s">One system. Five surfaces.<br>Zero missed signals.</h2>
-      <p class="lede reveal" style="--d:.2s">Each surface is purpose-built for the person holding it: student, teacher, till operator, administrator, or diner manager. Every one of them writes to the same ledger.</p>
+      <p class="lede reveal" style="--d:.2s">Each surface is purpose-built for the person holding it: student, teacher, cashier, administrator, or store manager. Every one of them writes to the same campus records.</p>
     </div>
   </section>
 
@@ -959,7 +987,7 @@
     <div class="inner">
       <div class="s-copy reveal">
         <div class="s-label"><span class="num">01</span> Student App</div>
-        <h3>One QR for class.<br>One QR for lunch.</h3>
+        <h3>One QR for class.<br>One QR for campus stores.</h3>
         <p class="s-desc">The app in every student's pocket: check in, pay, and see exactly where the day's allowance stands.</p>
         <ul>
           <li><b>Attendance check-in</b> with an auto-refreshing QR code that appears only while a session is open, with instant on-screen confirmation the moment they're scanned in.</li>
@@ -1037,24 +1065,24 @@
     </div>
   </section>
 
-  <!-- Surface 03: Diner POS -->
+  <!-- Surface 03: Store POS -->
   <section class="surface">
     <div class="inner">
       <div class="s-copy reveal">
-        <div class="s-label"><span class="num">03</span> Diner POS App</div>
-        <h3>A till that knows every customer before the tray hits the counter.</h3>
-        <p class="s-desc">A shared-device point of sale for canteen staff, built for the lunch rush, accountable by design.</p>
+        <div class="s-label"><span class="num">03</span> Store POS App</div>
+        <h3>A checkout that knows every customer before the order reaches the store counter.</h3>
+        <p class="s-desc">A shared-device point of sale for store counter staff, built for the busiest hour, accountable by design.</p>
         <ul>
           <li><b>Scan or search.</b> Rotating and static printed codes both work; name search covers the code that won't scan.</li>
           <li><b>Balance check before charge</b>: name, role, program, and balance on screen; low-balance warnings, and hard blocks when funds run out.</li>
           <li><b>Quick amounts or keypad</b> (5 / 10 / 15 / 20), receipt after every charge, then straight back to scanning.</li>
-          <li><b>Runs in your currency.</b> Concourser settles in 20+ currencies out of the box, so balances, charges, and reports all read in the campus's own denomination.</li>
+          <li><b>Runs in your currency.</b> Concourser supports over 20 out of the box, so balances, charges, and reports all read in the one your campus uses.</li>
           <li><b>Live daily totals</b> with per-program breakdown, and a printable end-of-day PDF report. Every charge records the staff member who made it.</li>
         </ul>
       </div>
       <div class="s-visual reveal" style="--d:.15s">
         <div class="panel">
-          <div class="panel-title"><span>CHARGE · STUDENT · BALANCE 24.50</span><span class="ok">TILL 01</span></div>
+          <div class="panel-title"><span>CHARGE · STUDENT · BALANCE 24.50</span><span class="ok">COUNTER 01</span></div>
           <div class="keypad">
             <button class="gold">5</button><button class="gold">10</button><button class="gold">15</button><button class="gold">20</button>
             <button>1</button><button>2</button><button>3</button><button>⌫</button>
@@ -1090,7 +1118,7 @@
             <tr><td>Student</td><td>AI Cohort 3</td><td><span class="pill a">Active</span></td><td>Reset · Move</td></tr>
             <tr><td>Teacher</td><td>Robotics</td><td><span class="pill a">Active</span></td><td>Reset · Cards</td></tr>
             <tr><td>Student</td><td>AI Cohort 2</td><td><span class="pill i">Inactive</span></td><td>Reactivate</td></tr>
-            <tr><td>Store staff</td><td>Diner</td><td><span class="pill a">Active</span></td><td>Reset</td></tr>
+            <tr><td>Store staff</td><td>Store</td><td><span class="pill a">Active</span></td><td>Reset</td></tr>
           </table>
           <div style="margin-top:18px">
             <span class="chip on">BULK UPLOAD · 118 VALID / 2 FLAGGED</span><span class="chip">QR BATCH → PDF</span>
@@ -1100,17 +1128,17 @@
     </div>
   </section>
 
-  <!-- Surface 05: Diner Dashboard -->
+  <!-- Surface 05: Store Dashboard -->
   <section class="surface">
     <div class="inner">
       <div class="s-copy reveal">
-        <div class="s-label"><span class="num">05</span> Diner Dashboard</div>
+        <div class="s-label"><span class="num">05</span> Store Dashboard</div>
         <h3>Every transaction, every hour, every program, in one view.</h3>
-        <p class="s-desc">The diner's own control room: what's selling, who's running low, and how the week is really going.</p>
+        <p class="s-desc">The store's own control room: what's selling, who's running low, and how the week is really going.</p>
         <ul>
           <li><b>Real-time sales stats</b>: totals, unique customers, and average transaction at a glance.</li>
           <li><b>Customer lookup & remote charge</b>: search by name, see the full allowance picture and code validity, charge from the dashboard keypad.</li>
-          <li><b>Allowance monitoring</b>: every active balance for the day, sorted most-depleted first, with at-limit and over-limit counts.</li>
+          <li><b>Allowance monitoring</b>: every active balance for the day, sorted lowest balance first, with at-limit and over-limit counts.</li>
           <li><b>End-of-day, weekly, and monthly Excel analytics</b> with hourly and per-program revenue breakdowns.</li>
         </ul>
       </div>
@@ -1124,7 +1152,7 @@
           </div>
           <div class="bars-x"><span>07</span><span>09</span><span>11</span><span>13</span><span>15</span><span>17</span></div>
           <div class="low-list">
-            <div><span>Balances depleted</span><span class="dep">14 accounts</span></div>
+            <div><span>Balances used up</span><span class="dep">14 accounts</span></div>
             <div><span>Running low (&lt; 20%)</span><span class="warn">31 accounts</span></div>
             <div><span>Weekly report</span><span style="color:var(--accent2)">→ Excel</span></div>
           </div>
@@ -1138,7 +1166,7 @@
     <div class="inner">
       <div class="eyebrow reveal">Security &amp; compliance</div>
       <h2 class="reveal" style="--d:.1s">Built like ground control:<br>nothing moves unverified.</h2>
-      <p class="lede reveal" style="--d:.2s">Concourser handles identity, attendance, and financial activity for hundreds of people a day, so the security posture is not an afterthought.</p>
+      <p class="lede reveal" style="--d:.2s">Concourser handles identity, attendance, and financial activity for hundreds of people a day, so the security concern is not an afterthought.</p>
       <div class="sec-grid">
         <div class="sec-card reveal">
           <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
@@ -1169,8 +1197,8 @@
     <div class="inner">
       <div class="eyebrow reveal">In the field</div>
       <h2 class="reveal" style="--d:.1s">In quiet, daily service.</h2>
-      <p class="lede reveal" style="--d:.2s">Concourser runs the everyday rhythm of a working campus: morning check-ins, the breakfast rush, the end-of-day report. It is not built to impress with dashboards; it is built to stay out of the way.</p>
-      <p class="lede reveal" style="--d:.3s">It also pays for its keep. Before Concourser, the piloting campus ran on hand-signed paper coupons: unverifiable in a lunch rush, four times the staff work, and money quietly leaking with every service. Ephemeral QRs and per-program cost-center reconciliation closed that gap, recovering an estimated several thousand dollars as savings every month since February 2026.</p>
+      <p class="lede reveal" style="--d:.2s">Concourser runs the everyday rhythm of a working campus: morning check-ins, the busiest store hours, the end-of-day report. It is not built to impress with dashboards; it is built to stay out of the way.</p>
+      <p class="lede reveal" style="--d:.3s">It also pays for itself. Before Concourser, the piloting campus ran on hand-signed paper coupons: unverifiable at a busy store counter, four times the staff work, and money quietly leaking with every service. Short-lived rotating QRs and per-program cost-center reconciliation closed that gap, recovering an estimated several thousand dollars as savings every month since February 2026.</p>
       <!-- Field-notes container temporarily removed (kept for later reference).
       <div class="field-notes reveal" style="--d:.3s">
         <div class="fn-title">FIELD NOTES · EARLY FIVE-DAY SAMPLE · FEB 2026</div>
@@ -1181,13 +1209,44 @@
     </div>
   </section>
 
+  <!-- ============ PLANNED & UPCOMING ============ -->
+  <section class="roadmap" id="roadmap">
+    <div class="inner">
+      <div class="eyebrow reveal">Planned &amp; upcoming</div>
+      <h2 class="reveal" style="--d:.1s">In the blueprint,<br>not yet in orbit.</h2>
+      <p class="lede reveal" style="--d:.2s">These are the directions we are building with founding campuses, not a shipped feature list. Each one extends something already running in daily service, and pilot partners help decide the order.</p>
+      <div class="sec-grid">
+        <div class="sec-card reveal">
+          <span class="tag">// Planned</span>
+          <h4>Sessions beyond the classroom</h4>
+          <p>Attendance sessions already run every morning. The same system building block extends to guest lectures, seminars, orientation and exam halls: one-off attendance lists, walk-in registration, and catering drawn against the event's own cost center rather than a student's program allowance.</p>
+        </div>
+        <div class="sec-card reveal" style="--d:.1s">
+          <span class="tag">// Planned</span>
+          <h4>One app, every platform</h4>
+          <p>The unified iOS beta on TestFlight carries all three roles in a single build. The next step is one cross-platform client for iOS and Android, so a campus deploys one app instead of any other number of installable surfaces.</p>
+        </div>
+        <div class="sec-card reveal" style="--d:.2s">
+          <span class="tag">// Planned</span>
+          <h4>Financial and deadline calendars for everyone</h4>
+          <p>Every entry in the ledger already carries a timestamp. Surfaced as a shared calendar, that becomes something each role can plan against: when an allowance refreshes or expires, when attendance is required, when a store settles, when a term closes and the books have to balance.</p>
+        </div>
+        <div class="sec-card reveal" style="--d:.3s">
+          <span class="tag">// Planned</span>
+          <h4>Expanding to sponsors, guardians and collaborators</h4>
+          <p>The role model already decides what each surface is allowed to see. Opening it wider brings in the people around a campus: sponsors funding a program, guardians following a student's balance, and partner institutions running a joint course or event, each with a wisely limited view and aggregate figures where privacy requires them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ CLOSING / FOOTER ============ -->
   <section class="closing" id="contact">
     <div class="inner">
       <h2 class="reveal" style="--d:.18s">Every piece in orbit.<br>Bring Concourser to your campus.</h2>
       <p class="lede reveal" style="--d:.26s">From the first morning scan to the end-of-day report, one platform keeps the whole operation in motion.</p>
       <div class="hero-ctas reveal" style="--d:.34s">
-        <a class="btn btn-primary" href="mailto:contact@rikoukeilabs.com?subject=Concourser%20demo%20request">Get in touch</a>
+        <a class="btn btn-primary" href="mailto:contact@rikoukeilabs.com?subject=Concourser%20pilot%20request">Get in touch</a>
         <a class="btn btn-ghost" href="#top">Back to launch</a>
       </div>
 
@@ -1197,8 +1256,7 @@
           <a href="#platform">Platform</a>
           <a href="#security">Security</a>
           <a href="#impact">In the field</a>
-          <a href="/apps/" id="products-link">Demos</a>
-          <a href="mailto:contact@rikoukeilabs.com">Contact</a>
+          <a href="#roadmap">What's next</a>
         </span>
       </div>
     </div>
@@ -1324,6 +1382,20 @@
     }
   }
 
+  /* ============ Ambient star drift (same slow drift as the apps page) ============ */
+  var starDrift = 0;
+  var drifting = false;
+  function startDrift() {
+    if (drifting || reducedMotion) return;
+    drifting = true;
+    (function tick() {
+      if (mobileMQ.matches) { drifting = false; drawStars(window.scrollY); return; }
+      starDrift += 0.5;
+      drawStars(window.scrollY + starDrift);
+      requestAnimationFrame(tick);
+    })();
+  }
+
   /* ============ Scroll loop (rAF-throttled) ============ */
   var ticking = false;
   function onScroll() {
@@ -1335,7 +1407,8 @@
       var p = Math.max(0, Math.min(1, window.scrollY / max));
       updateAssembly(p);
       // Mobile: skip the per-scroll parallax redraw; stars stay static.
-      if (!mobileMQ.matches) drawStars(window.scrollY);
+      // Desktop: when the drift loop runs it already redraws every frame.
+      if (!mobileMQ.matches && !drifting) drawStars(window.scrollY + starDrift);
       ticking = false;
     });
   }
@@ -1353,12 +1426,14 @@
     updateAssembly(Math.max(0, Math.min(1,
       window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight))));
     onScroll();
+    if (!mobileMQ.matches) startDrift();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", function () { initStars(); drawStars(0); onScroll(); });
     mobileMQ.addEventListener && mobileMQ.addEventListener("change", function () {
       initStars();
       drawStars(0);
       onScroll();
+      if (!mobileMQ.matches) startDrift();
     });
   }
 
@@ -1446,7 +1521,8 @@
   #contact-modal{position:fixed;inset:0;z-index:9600;display:none;align-items:center;justify-content:center;background:rgba(5,6,10,0.72);backdrop-filter:blur(3px)}
   #contact-modal.open{display:flex}
   #contact-modal .cm-card{background:var(--bg-raised);border:1px solid var(--line);max-width:420px;width:calc(100% - 48px);padding:28px 26px;position:relative}
-  #contact-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 18px}
+  #contact-modal .cm-title{font-family:var(--font-mono);font-size:13px;letter-spacing:.3em;color:var(--gold);margin:0 0 14px}
+  #contact-modal .cm-desc{font-family:var(--font-mono);font-size:12.5px;color:var(--text-dim);line-height:1.75;margin:0 0 18px;padding-bottom:16px;border-bottom:1px solid var(--line)}
   #contact-modal .cm-row{margin:14px 0}
   #contact-modal .cm-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase}
   #contact-modal .cm-val{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -1459,6 +1535,7 @@
   <div class="cm-card">
     <button class="cm-close" aria-label="Close">&times;</button>
     <p class="cm-title" id="cm-title-txt">// CONTACT</p>
+    <p class="cm-desc">You can either drop us a message with your questions and our team will quickly get back to you with answers, or ask for an online meeting to talk face-to-face.</p>
     <div class="cm-row"><span class="cm-label">E-mail address</span>
       <span class="cm-val"><span class="cm-email">contact@rikoukeilabs.com</span><button class="cm-copy" type="button">COPY</button></span>
     </div>
@@ -1518,7 +1595,7 @@
       '<span class="wring"></span>' +
       '<span class="wlabel">// LAUNCHING : ECOSYSTEM</span>';
     document.body.appendChild(ov);
-    setTimeout(function () { window.location.href = '/apps/?warp=1'; }, 760);
+    setTimeout(function () { window.location.href = link.getAttribute('href') + '?warp=1'; }, 760);
   });
 })();
 </script>
